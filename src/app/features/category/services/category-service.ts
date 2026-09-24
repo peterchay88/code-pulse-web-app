@@ -1,13 +1,14 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, httpResource } from '@angular/common/http';
 import { AddCategoryRequest, Category } from '../models/category.models';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CategoryService {
   private http = inject(HttpClient);
-  private apiBaseUrl = 'http://localhost:5026';
+  private apiBaseUrl = environment.apiBaseUrl;
 
   addCategoryStatus = signal<'idle' | 'loading' | 'error' | 'success'>('idle');
 
