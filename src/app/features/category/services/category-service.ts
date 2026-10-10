@@ -1,6 +1,6 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, InputSignal, inject, signal } from '@angular/core';
 import { HttpClient, httpResource } from '@angular/common/http';
-import { AddCategoryRequest, Category } from '../models/category.models';
+import { AddCategoryRequest, Category, UpdateCategoryRequest } from '../models/category.models';
 import { environment } from '../../../../environments/environment';
 
 @Injectable({
@@ -11,7 +11,12 @@ export class CategoryService {
   private apiBaseUrl = environment.apiBaseUrl;
 
   addCategoryStatus = signal<'idle' | 'loading' | 'error' | 'success'>('idle');
+  updateCategoryStatus = signal<'idle' | 'loading' | 'error' | 'success'>('idle');
 
+  /**
+   * Issues a Post request to add a new category
+   * @param category 
+   */
   addCategory(category: AddCategoryRequest){
     this.addCategoryStatus.set('loading');
 
@@ -25,9 +30,39 @@ export class CategoryService {
     });
   }
 
+  /**
+   * Issues a Get request to retrieve all categories
+   */
   getAllCategories(){
     const response = httpResource<Category[]>(() => `${this.apiBaseUrl}/api/categories`)
     return response;
+  }
+
+  /**
+   * Issues a Get request to retrieve a category by its ID
+   * @param id 
+   */
+  getCategoryByID(id: InputSignal<string | undefined>){
+    const response = httpResource<Category>(() => `${this.apiBaseUrl}/api/categories/${id()}`);
+    return response;
+  }
+
+  /**
+   * Issues a PUT request to update a category by its ID
+   * @param id 
+   * @param updateCategoryRequest 
+   */
+  updateCategory(id: InputSignal<string | undefined>, updateCategoryRequest: UpdateCategoryRequest){
+    this.updateCategoryStatus.set('loading');
+    this.http.put<void>(`${this.apiBaseUrl}/api/categories/${id()}`, updateCategoryRequest)
+      .subscribe({
+        next: () => {
+          this.updateCategoryStatus.set('success');
+        },
+        error: () => {
+          this.updateCategoryStatus.set('error');
+        }
+    });
   }
 
 }
