@@ -23,6 +23,16 @@ export class EditCategory {
         console.error(`Failed to update category with ID: ${this.id()}`);
         this.categoryService.updateCategoryStatus.set('idle');
       }
+
+      if (this.categoryService.deleteCategoryStatus() === 'success') {
+        console.log(`Category with ID: ${this.id()} deleted successfully`);
+        this.categoryService.deleteCategoryStatus.set('idle');
+        this.router.navigate(['admin/categories']);
+      }
+      if (this.categoryService.deleteCategoryStatus() === 'error') {
+        console.error(`Failed to delete category with ID: ${this.id()}`);
+        this.categoryService.deleteCategoryStatus.set('idle');
+      }
     })
   }
 
@@ -75,6 +85,14 @@ export class EditCategory {
     console.log(`Updating category with ID: ${id}`)
     this.categoryService.updateCategory(this.id, updateCategoryRequest);
 
+  }
+
+  deleteCategory(){
+    const id = this.id();
+    if (!id) {
+      return;
+    }
+    this.categoryService.deleteCategory(this.id);
   }
 
 }

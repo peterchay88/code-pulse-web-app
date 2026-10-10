@@ -12,6 +12,7 @@ export class CategoryService {
 
   addCategoryStatus = signal<'idle' | 'loading' | 'error' | 'success'>('idle');
   updateCategoryStatus = signal<'idle' | 'loading' | 'error' | 'success'>('idle');
+  deleteCategoryStatus = signal<'idle' | 'loading' | 'error' | 'success'>('idle');
 
   /**
    * Issues a Post request to add a new category
@@ -63,6 +64,20 @@ export class CategoryService {
           this.updateCategoryStatus.set('error');
         }
     });
+  }
+
+  deleteCategory(id: InputSignal<string | undefined>){
+    this.deleteCategoryStatus.set('loading');
+    this.http.delete<void>(`${this.apiBaseUrl}/api/categories/${id()}`)
+      .subscribe({
+        next: () => {
+          this.deleteCategoryStatus.set('success');
+        },
+        error: () => {
+          this.deleteCategoryStatus.set('error');
+        }
+      });
+
   }
 
 }
